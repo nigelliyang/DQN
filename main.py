@@ -12,12 +12,12 @@ def main(arg):
     symbols = utils.get_sap_symbols('sap500')
     np.random.shuffle(symbols)
     chosen_symbols = symbols[:10]
-    start_date="2009-04-01"
-    end_date="2015-03-31"
+    start_date = "2009-04-01"
+    end_date = "2015-03-31"
     # use Open data
     input_data = utils.get_data_list_key(chosen_symbols, start_date, end_date)
     elapsed = time.time() - st
-    print ("time for getting data:", elapsed)
+    print("time for getting data:", elapsed)
 
     train_st = pd.Timestamp("2009-04-01")
     train_end = pd.Timestamp("2012-03-31")
@@ -26,12 +26,11 @@ def main(arg):
 
     train_input = input_data.loc[(input_data.index >= train_st) & (input_data.index <= train_end)]
     test_input = input_data.loc[(input_data.index >= test_st) & (input_data.index <= test_end)]
-    
+
     # training
     n_stock = len(train_input.values[0])
     sys.path.append("./model")
     print(arg)
-
 
     if arg == "ddpg":
         from ddpg import DDPG
@@ -48,7 +47,7 @@ def main(arg):
         return values
     else:
         return None
-    
+
     # prediction
     profit = []
     date = []
@@ -65,11 +64,11 @@ def main(arg):
         prof += gain
         profit.append(prof)
         date.append(index[i])
-        if count%10 == 0:
+        if count % 10 == 0:
             result = pd.DataFrame(profit, index=pd.DatetimeIndex(date))
             result.to_csv("test_result.csv")
         count += 1
-        if count%10 == 0:
+        if count % 10 == 0:
             print('time:', index[i])
             print('portfolio:', action)
             print('profit:', prof)
@@ -79,8 +78,10 @@ def main(arg):
         old_value = value
     result = pd.DataFrame(profit, index=pd.DatetimeIndex(date))
     return result
-    
+
+
 if __name__ == '__main__':
-    arg = sys.argv[1]
+    # arg = sys.argv[1]
+    arg = "ddpg"
     warnings.filterwarnings("ignore")
     result = main(arg)

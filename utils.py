@@ -6,7 +6,11 @@ from collections import deque
 from bs4 import BeautifulSoup
 # satisfy compatilibty between python2 and python3
 from six.moves.urllib.request import urlopen
+import pandas_datareader as pdr
+
 version = int(sys.version[0])
+
+
 # the symbols of S&P500 and S&P 100 are ^GSPC and ^OEX
 def get_sap_symbols(name='sap500'):
     """Get ticker symbols constituting S&P
@@ -32,6 +36,7 @@ def get_sap_symbols(name='sap500'):
             symbols.append(str(symbol))
     return symbols
 
+
 def date_parse(date):
     """split time data into the list of ingegers
     Args:
@@ -42,6 +47,7 @@ def date_parse(date):
     parsed = date.split('-')
     converted = [int(t) for t in parsed]
     return converted
+
 
 def get_data(symbol, st, end):
     """Get historical data from yahoo-finance as pd.DataFrame
@@ -57,7 +63,7 @@ def get_data(symbol, st, end):
     ye, me, de = date_parse(end)
     # fetch data from yahoo finance
     url = urlopen('http://chart.finance.yahoo.com/table.csv?s=%s&a=%d&b=%d&c=%d&d=%d&e=%d&f=%d&g=d&ignore=.csv' \
-                           % (symbol, ms, ds, ys, me, de, ye))
+                  % (symbol, ms, ds, ys, me, de, ye))
     history = url.read()
     if version == 3:
         history = str(history).split('\\n')
@@ -76,12 +82,14 @@ def get_data(symbol, st, end):
         values.appendleft([float(value) for value in x[1:]])
     return pd.DataFrame(list(values), columns=keys, index=list(dates))
 
+
 def get_data_list_full(symbols, st, end):
     """Get all of symbols's data as list"""
     data = []
     for s in symbols:
         data.append(get_data(s, st, end))
     return data
+
 
 def get_data_list_key(symbols, st, end, key='Open'):
     """Get historical data of key attribute
@@ -94,33 +102,35 @@ def get_data_list_key(symbols, st, end, key='Open'):
     Return:
         DataFrame
     """
-    values= []
+    values = []
     sucess_symbols = []
     fail_symbols = []
     # length of data 
     max_len = 0
     for s in symbols:
         try:
-            x = get_data(s, st, end)
+            # x = get_data(s, st, end)
+            x = pdr.DataReader(s, 'yahoo', st, end)
             n_data = len(x.index)
             if n_data >= max_len:
                 if n_data != max_len:
                     max_len = n_data
                     date = x.index
                     fail_symbols += sucess_symbols
-                    values= []
+                    values = []
                     sucess_symbols = []
                 values.append(x[key])
                 sucess_symbols.append(s)
             else:
-                fail_symbols.append(s)            
+                fail_symbols.append(s)
         except:
             fail_symbols.append(s)
             pass
     if len(fail_symbols) > 0:
         print('we cound not fetch data from the following companies')
         print(fail_symbols)
-    return pd.DataFrame(np.array(values).T, index = date, columns=sucess_symbols)
+    return pd.DataFrame(np.array(values).T, index=date, columns=sucess_symbols)
+
 
 def testscore(prediction, target):
     return np.mean(np.abs(prediction - target) / target)

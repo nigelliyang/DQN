@@ -1,7 +1,7 @@
 class DDPGConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
-        self.save_path = '/home/tomoaki/work/github/jjakimoto.github.io/content'
+        self.save_path = '/content'
         self.is_load = False
         self.gamma = 1.0
         self.history_length = 10
@@ -45,7 +45,7 @@ class DDPGConfig(object):
 class DQNConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
-        self.save_path = '/path/to/your/save/path/model.ckpt'
+        self.save_path = '/model.ckpt'
         self.is_load = False
         self.gamma = 0.999
         self.history_length = 10
