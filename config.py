@@ -1,3 +1,6 @@
+from keras.layers.advanced_activations import PReLU
+from keras.layers.core import Lambda
+
 class DDPGConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
@@ -41,7 +44,7 @@ class DDPGConfig(object):
         self.noise_scale = 5.0
         self.alpha = 0.7
         self.beta = 0.5
-        
+
 class DQNConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
@@ -61,8 +64,7 @@ class DQNConfig(object):
         self.beta = 0.5
         self.update_rate = 1e-1
         self.learning_rate = 1e-3
-    
+
         # memory_config
         self.memory_length = 200
         self.n_memory = 1
-        
