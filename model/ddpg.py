@@ -17,6 +17,7 @@ import time
 # local library
 from memory import SequentialMemory
 
+
 class DDPG(object):
     """Deep Deterministic Poilicy Gradient
     
@@ -363,6 +364,9 @@ class DDPG(object):
         model = Sequential()
         if _model is None:
             model.add(Lambda(lambda x: x, input_shape=input_shape))
+            all_names = [layer.name for layer in model.layers]
+            if all_names.count('lambda_1') > 0:
+                model.get_layer(name='lambda_1').name = 'lambda_1_' + str(model.layers.__len__())
         else:
             model.add(_model)
 
@@ -403,12 +407,12 @@ class DDPG(object):
         for n_sm in range(2, self.n_smooth + 2):
             smoothed.append(
                 tf.reduce_mean(tf.stack([input[:, self.n_history - st - self.history_length:self.n_history - st, :, :]
-                                        for st in range(n_sm)]), 0))
+                                         for st in range(n_sm)]), 0))
         # downsample data
         down = []
         for n_dw in range(2, self.n_down + 2):
             sampled_ = tf.stack([input[:, idx, :, :]
-                                for idx in range(self.n_history - n_dw * self.history_length, self.n_history, n_dw)])
+                                 for idx in range(self.n_history - n_dw * self.history_length, self.n_history, n_dw)])
             down.append(tf.transpose(sampled_, [1, 0, 2, 3]))
         return raw, smoothed, down
 

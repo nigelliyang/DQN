@@ -1,6 +1,7 @@
 from keras.layers.advanced_activations import PReLU
 from keras.layers.core import Lambda
 
+
 class DDPGConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
@@ -15,35 +16,36 @@ class DDPGConfig(object):
         self.n_epoch = 10
         self.update_rate = 1e-1
         self.learning_rate = 1e-3
-        self.model_config = {'critic_lower':[{'type':'conv', 'n_feature': 32, 'kw': 4,
-                                              'activation': PReLU(), 'is_batch': True, 'is_drop': False},
-                                             {'type':'conv', 'n_feature': 64, 'kw': 4,
-                                              'activation': PReLU(), 'is_batch': True, 'is_drop': False},
-                                             {'type':'conv', 'n_feature': 32, 'kw': 4,
-                                              'activation': PReLU(), 'is_batch': True, 'is_drop': False}],
-                             'critic_upper':[{'type':'full', 'n_feature': 32, 'kw': 4,
-                                              'activation': PReLU(), 'is_batch': True, 'is_drop': False},
-                                             {'type':'full', 'n_feature': 10, 'kw': 4,
-                                              'activation': Lambda(lambda x: x), 'is_batch': False, 'is_drop': False}],
-                             'critic_action':[{'type':'full', 'n_feature': 32, 'kw': 4,
-                                              'activation': PReLU(), 'is_batch': True, 'is_drop': False},
-                                             {'type':'full', 'n_feature': 10, 'kw': 4,
-                                              'activation': PReLU(), 'is_batch': False, 'is_drop': False}],
-                             'actor_lower':[{'type':'conv', 'n_feature': 32, 'kw': 4,
+        self.model_config = {'critic_lower': [{'type': 'conv', 'n_feature': 32, 'kw': 4,
+                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False},
+                                              {'type': 'conv', 'n_feature': 64, 'kw': 4,
+                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False},
+                                              {'type': 'conv', 'n_feature': 32, 'kw': 4,
+                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False}],
+                             'critic_upper': [{'type': 'full', 'n_feature': 32, 'kw': 4,
+                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False},
+                                              {'type': 'full', 'n_feature': 10, 'kw': 4,
+                                               'activation': Lambda(lambda x: x), 'is_batch': False, 'is_drop': False}],
+                             'critic_action': [{'type': 'full', 'n_feature': 32, 'kw': 4,
+                                                'activation': PReLU(), 'is_batch': True, 'is_drop': False},
+                                               {'type': 'full', 'n_feature': 10, 'kw': 4,
+                                                'activation': PReLU(), 'is_batch': False, 'is_drop': False}],
+                             'actor_lower': [{'type': 'conv', 'n_feature': 32, 'kw': 4,
                                               'activation': Lambda(lambda x: x), 'is_batch': True, 'is_drop': False},
-                                             {'type':'conv', 'n_feature': 64, 'kw': 4,
+                                             {'type': 'conv', 'n_feature': 64, 'kw': 4,
                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False},
-                                             {'type':'conv', 'n_feature': 32, 'kw': 4,
+                                             {'type': 'conv', 'n_feature': 32, 'kw': 4,
                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False}],
-                             'actor_upper':[{'type':'full', 'n_feature': 32, 'kw': 4,
+                             'actor_upper': [{'type': 'full', 'n_feature': 32, 'kw': 4,
                                               'activation': PReLU(), 'is_batch': True, 'is_drop': False},
-                                             {'type':'full', 'n_feature': self.n_stock, 'kw': 4,
+                                             {'type': 'full', 'n_feature': self.n_stock, 'kw': 4,
                                               'activation': Lambda(lambda x: x), 'is_batch': False, 'is_drop': False}]}
         self.memory_length = 200
         self.n_memory = 10
         self.noise_scale = 5.0
         self.alpha = 0.7
         self.beta = 0.5
+
 
 class DQNConfig(object):
     def __init__(self, n_stock):
