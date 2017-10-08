@@ -6,6 +6,7 @@ from keras.models import Sequential
 from keras.layers import BatchNormalization
 from keras.layers import Activation
 from keras.layers.core import Dense
+# from keras.engine.topology import Merge
 from keras.layers import Merge
 from keras.layers.advanced_activations import PReLU
 from keras.layers import SpatialDropout2D

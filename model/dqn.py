@@ -6,11 +6,14 @@ from keras.models import Sequential
 from keras.layers import BatchNormalization
 from keras.layers import Activation
 from keras.layers.core import Dense
-from keras.engine.topology import Merge
+from keras.layers import Merge
+# from keras.engine.topology import Merge
 from keras.layers.advanced_activations import PReLU
 from keras.layers import SpatialDropout2D
 from keras.layers import Dropout, Reshape
 from keras import backend as K
+# from keras.layers.core import K
+
 import numpy as np
 import pandas as pd
 import time
@@ -75,9 +78,10 @@ class DQN(object):
         self.n_history = max(self.n_smooth + self.history_length, (self.n_down + 1) * self.history_length)
         print ("building model....")
         # have compatibility with new tensorflow
-        tf.python.control_flow_ops = tf
+        # tf.python.control_flow_ops = tf
         # avoid creating _LEARNING_PHASE outside the network
         K.clear_session()
+        # K.set_learning_phase(tf.get_default_graph())
         self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=False))
         K.set_session(self.sess)
         with self.sess.as_default():
@@ -284,7 +288,7 @@ class DQN(object):
         self.max_idx_target = tf.placeholder(tf.int32, [None, 3], "double_idx")
         Q_max = tf.gather_nd(Q_target, self.max_idx_target)
         Q_max = tf.reshape(Q_max, [-1, self.n_stock, 1])
-        Q_value = tf.concat(2, (tf.zeros_like(Q_max), Q_max))
+        Q_value = tf.concat((tf.zeros_like(Q_max), Q_max),2)
         self.target_value = self.reward  + self.gamma * Q_value
         self.target_value = tf.cast(self.target_value, tf.float32)
         self.target = tf.placeholder(tf.float32, [None, self.n_stock, 2], name="target_value")
@@ -308,7 +312,7 @@ class DQN(object):
                 print('failed to load')
         
         # initialize network
-        tf.initialize_all_variables().run(session=self.sess)
+        tf.global_variables_initializer().run(session=self.sess)
         weights = self.critic.get_weights()
         self.critic_target.set_weights(weights)
         
@@ -324,21 +328,21 @@ class DQN(object):
         for m in sm_model:
             m.add(Lambda(lambda x: x,  input_shape=(self.history_length, self.n_stock, 1)))
             m.add(Convolution2D(nb_filter=nf, nb_row=self.k_w, nb_col=1, border_mode='same'))
-            m.add(BatchNormalization(mode=2, axis=-1))
+            m.add(BatchNormalization(axis=-1))
             m.add(PReLU())
         # down sampled input
         dw_model = [Sequential() for _ in range(self.n_down)]
         for m in dw_model:
             m.add(Lambda(lambda x: x,  input_shape=(self.history_length, self.n_stock, 1)))
             m.add(Convolution2D(nb_filter=nf, nb_row=self.k_w, nb_col=1, border_mode='same'))
-            m.add(BatchNormalization(mode=2, axis=-1))
+            m.add(BatchNormalization(axis=-1))
             m.add(PReLU())
         # raw input
         state = Sequential()
         nf = self.n_feature
         state.add(Lambda(lambda x: x,  input_shape=(self.history_length, self.n_stock, 1)))
         state.add(Convolution2D(nb_filter=nf, nb_row=self.k_w, nb_col=1, border_mode='same'))
-        state.add(BatchNormalization(mode=2, axis=-1))
+        state.add(BatchNormalization(axis=-1))
         state.add(PReLU())
         merged = Merge([state,] + sm_model + dw_model, mode='concat', concat_axis=-1)
         # layer2
@@ -346,12 +350,12 @@ class DQN(object):
         model = Sequential()
         model.add(merged)
         model.add(Convolution2D(nb_filter=nf, nb_row=self.k_w, nb_col=1, border_mode='same'))
-        model.add(BatchNormalization(mode=2, axis=-1))
+        model.add(BatchNormalization(axis=-1))
         model.add(PReLU())
         model.add(Flatten())
         # layer3
         model.add(Dense(self.n_hidden))
-        model.add(BatchNormalization(mode=1, axis=-1))
+        model.add(BatchNormalization(axis=-1))
         model.add(PReLU())
         # layer4
         model.add(Dense(int(np.sqrt(self.n_hidden))))
@@ -375,12 +379,12 @@ class DQN(object):
         smoothed = []
         for n_sm in range(2, self.n_smooth + 2):
             smoothed.append(
-                tf.reduce_mean(tf.pack([input[:, self.n_history - st - self.history_length:self.n_history - st, :, :]
+                tf.reduce_mean(tf.stack([input[:, self.n_history - st - self.history_length:self.n_history - st, :, :]
                                         for st in range(n_sm)]),0))
         # downsample data
         down = []
         for n_dw in range(2, self.n_down + 2):
-            sampled_ = tf.pack([input[:, idx, :, :] 
+            sampled_ = tf.stack([input[:, idx, :, :]
                                 for idx in range(self.n_history-n_dw*self.history_length, self.n_history, n_dw)])
             down.append(tf.transpose(sampled_, [1, 0, 2, 3]))
         return raw, smoothed, down
