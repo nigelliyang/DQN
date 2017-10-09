@@ -12,8 +12,8 @@ def main(arg):
     symbols = utils.get_sap_symbols('sap500')
     np.random.shuffle(symbols)
     chosen_symbols = symbols[:10]
-    start_date = "2017-10-01"
-    end_date = "2016-03-31"
+    start_date = "2016-01-01"
+    end_date = "2017-10-01"
     # use Open data
     input_data = utils.get_data_list_key(chosen_symbols, start_date, end_date)
     elapsed = time.time() - st
