@@ -19,10 +19,10 @@ def main(arg):
     elapsed = time.time() - st
     print("time for getting data:", elapsed)
 
-    train_st = pd.Timestamp("2009-04-01")
-    train_end = pd.Timestamp("2012-03-31")
-    test_st = pd.Timestamp("2012-04-01")
-    test_end = pd.Timestamp("2015-03-31")
+    train_st = pd.Timestamp("2016-01-01")
+    train_end = pd.Timestamp("2016-12-31")
+    test_st = pd.Timestamp("2017-01-01")
+    test_end = pd.Timestamp("2017-10-01")
 
     train_input = input_data.loc[(input_data.index >= train_st) & (input_data.index <= train_end)]
     test_input = input_data.loc[(input_data.index >= test_st) & (input_data.index <= test_end)]
