@@ -1,11 +1,12 @@
 from keras.layers.advanced_activations import PReLU
 from keras.layers.core import Lambda
+import os
 
 
 class DDPGConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
-        self.save_path = '/content'
+        self.save_path = os.getcwd() + '\\model'
         self.is_load = False
         self.gamma = 1.0
         self.history_length = 10
