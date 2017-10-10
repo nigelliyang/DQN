@@ -6,7 +6,7 @@ import os
 class DDPGConfig(object):
     def __init__(self, n_stock):
         self.device = '/gpu:0'
-        self.save_path = os.getcwd() + '\\model'
+        self.save_path = os.getcwd() + '\\model.ckpt'
         self.is_load = False
         self.gamma = 1.0
         self.history_length = 10
