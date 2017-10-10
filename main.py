@@ -81,7 +81,7 @@ def main(arg):
 
 
 if __name__ == '__main__':
-    # arg = sys.argv[1]
-    arg = "ddpg"
+    arg = sys.argv[1]
+    # arg = "ddpg"
     warnings.filterwarnings("ignore")
     result = main(arg)
